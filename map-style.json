@@ -1,0 +1,34 @@
+[
+  {
+    "featureType": "administrative",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "landscape.natural.landcover",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "road",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "transit.line",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "water",
+    "stylers": [
+      { "color": "#1a4e80" }
+    ]
+  },{
+    "featureType": "landscape.natural.terrain",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+  }
+]
