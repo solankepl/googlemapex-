@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Geocoding service</title>
+    <link rel="shortcut icon" href="pasportphoto.JPG"/>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+	  
+    </style>
+    <script src="jquery.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false&region=IN"></script>
+    <script>
+	//simple example of how to get postion of marker in google map 
+	/* Ganrate google map stle -
+http://gmaps-samples-v3.googlecode.com/svn/trunk/styledmaps/wizard/index.html?utm_medium=twitter*/
+	
+var geocoder;
+var map;
+var mapStyle;
+var setId = 0;
+function initialize() {
+	$.getJSON("map-style.json", function(data) {
+			mapStyle = data;
+						
+	}).complete(function() { 
+		loadMap();
+	});
+}
+
+function loadMap(){
+	geocoder = new google.maps.Geocoder();
+	var latlng = new google.maps.LatLng(24.0000, 60.0000);
+	var mapOptions = {
+	zoom: 4,
+	mapTypeId: google.maps.MapTypeId.ROADMAP,
+	center: latlng,
+	styles: mapStyle 
+	//styles: [ { stylers: [ { hue: "#ff0000" } ] } ]
+	}
+	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+}
+
+function codeAddress() {
+  var address = document.getElementById('address').value;
+  var pos;
+  getLatLng(431160) // find code country
+  geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+		 setId++;
+      map.setCenter(results[0].geometry.location);
+      var marker = new google.maps.Marker({
+          map: map,
+		  icon:"pasportphoto.JPG",
+          position: results[0].geometry.location,
+		  animation: google.maps.Animation.DROP,
+      });
+	  
+	  	marker.set("id", "marker_"+setId);
+		 
+	    
+		marker.addListener('click', function(e) {
+			pos = getPosition(this);
+			console.log(pos.x +" == "+ pos.y);
+		});
+	  
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
+}
+
+	function getLatLng(postcode) {
+	var res = "";
+	geocoder.geocode({
+		'address': postcode + ',india'
+	}, function(results, status) {
+		if (results.length == 1) {
+			res = results[0].geometry.location;
+			console.log("found");			
+		} else {
+			console.log("not found");						
+		}
+	});
+}
+
+function getPosition(marker) {	
+	var scale = Math.pow(2, map.getZoom());
+	var nw = new google.maps.LatLng(
+		map.getBounds().getNorthEast().lat(),
+		map.getBounds().getSouthWest().lng()
+	);		
+	var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
+	var worldCoordinate = map.getProjection().fromLatLngToPoint(marker.getPosition());
+	var pixelOffset = new google.maps.Point(
+		Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
+		Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
+	);
+	
+	return pixelOffset; /* Returns the top left pixel of the specified marker on the specified map */
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+  </head>
+  <body>
+    <div id="panel">
+      <input id="address" type="textbox" value="431122">
+      <input type="button" value="pincode" onclick="codeAddress()">
+    </div>
+    <div id="map-canvas"></div>
+  </body>
+</html>
